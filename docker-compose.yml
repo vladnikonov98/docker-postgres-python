@@ -1,0 +1,31 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:latest
+    environment:
+      POSTGRES_USER: your_username
+      POSTGRES_PASSWORD: your_password
+      POSTGRES_DB: your_surname
+    volumes:
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    ports:
+      - "5432:5432"
+    networks:
+      - my_network
+
+  python:
+    image: python:3.9
+    working_dir: /app
+    volumes:
+      - ./app.py:/app/app.py
+    depends_on:
+      - db
+    command: >
+      bash -c "pip install psycopg2 && python /app/app.py"
+    networks:
+      - my_network
+
+networks:
+  my_network:
+    driver: bridge
